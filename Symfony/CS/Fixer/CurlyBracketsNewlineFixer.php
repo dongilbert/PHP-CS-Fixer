@@ -58,7 +58,7 @@ class CurlyBracketsNewlineFixer implements FixerInterface
 
     public function getDescription()
     {
-        return 'Opening braces for classes, interfaces, traits and methods must go on the next line, and closing braces must go on the next line after the body. Opening braces for control structures must go on the same line, and closing braces must go on the next line after the body.';
+        return 'Opening braces for classes, interfaces, traits and methods must go on the next line, and closing braces must go on the next line after the body. Opening braces for control structures must go on the next line, and closing braces must go on the next line after the body.';
     }
 
     private function classDeclarationFix($content)
@@ -75,8 +75,8 @@ class CurlyBracketsNewlineFixer implements FixerInterface
 
     private function anonymousFunctionsFix($content)
     {
-        // [Structure] No new line after anonymous function call
-        return preg_replace('/((^|[\s\W])function\s*\(.*\))([^\n]*?) *\n[^\S\n]*{/', self::REMOVE_NEWLINE, $content);
+        // [Structure] New line after anonymous function call
+        return preg_replace('/((^|[\s\W])function\s*\(.*\))([^\n]*?) *\n[^\S\n]*{/', self::ADD_NEWLINE, $content);
     }
 
     private function controlStatementsFix($content)
@@ -94,8 +94,8 @@ class CurlyBracketsNewlineFixer implements FixerInterface
             '\bcatch\s*\(.*\)',
         );
 
-        // [Structure] No new line after control statements
-        return preg_replace('/((^|[\s\W])('.implode('|', $statements).'))([^\n]*?) *\n[^\S\n]*{/', self::REMOVE_NEWLINE, $content);
+        // [Structure] New line after control statements
+        return preg_replace('/^([ \t]*)((?:[\w \t]+ )?'.implode('|', $statements).' [\w \t]+\(.*?\))[ \t]*{\s*$/m', self::ADD_NEWLINE, $content);
     }
 
     private function controlStatementContinuationFix($content)
@@ -106,7 +106,7 @@ class CurlyBracketsNewlineFixer implements FixerInterface
         );
 
         // [Structure] No new line after control statements
-        return preg_replace('/}\s*\n\s*(' . implode('|', $statements) . ')/', '} \\1', $content);
+        return preg_replace('/([ \t]*)}\s*(' . implode('|', $statements) . ')/', "\\1}\n\\1\\2", $content);
     }
 
     private function doWhileFix($content)
